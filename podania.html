@@ -1,0 +1,288 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+<meta charset="UTF-8">
+<title>Podania • RedLine</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+<style>
+* {
+    margin:0;
+    padding:0;
+    box-sizing:border-box;
+    font-family:'Poppins', sans-serif;
+}
+
+body {
+    background: radial-gradient(circle at top, #120000, #050000);
+    color:white;
+}
+
+/* NAVBAR */
+.navbar {
+    display:flex;
+    justify-content:space-between;
+    align-items:center;
+    padding:20px 40px;
+    background:rgba(0,0,0,0.6);
+    border-bottom:1px solid rgba(255,0,0,0.2);
+}
+
+.logo {
+    font-weight:700;
+    color:#ff1a1a;
+    text-shadow:0 0 10px red;
+}
+
+.back {
+    padding:10px 18px;
+    background:#8b0000;
+    border-radius:10px;
+    text-decoration:none;
+    color:white;
+    transition:0.2s;
+}
+
+.back:hover {
+    background:#ff1a1a;
+    box-shadow:0 0 15px red;
+}
+
+/* CONTAINER */
+.container {
+    max-width:900px;
+    margin:40px auto;
+    padding:20px;
+}
+
+/* CARD */
+.card {
+    background:rgba(10,0,0,0.7);
+    border:1px solid rgba(255,0,0,0.2);
+    border-radius:20px;
+    padding:25px;
+    backdrop-filter: blur(10px);
+    box-shadow:0 0 30px rgba(255,0,0,0.15);
+    animation:fadeUp 0.6s ease;
+}
+
+/* SECTIONS */
+.section {
+    margin-top:20px;
+    padding:15px;
+    background:rgba(255,0,0,0.05);
+    border-left:4px solid #ff1a1a;
+    border-radius:10px;
+}
+
+/* TEXT */
+.question {
+    margin-top:15px;
+    font-weight:600;
+    color:#ff4d4d;
+}
+
+.answer {
+    margin-top:6px;
+    padding:12px;
+    background:rgba(255,0,0,0.08);
+    border-radius:10px;
+    transition:0.2s;
+}
+
+.answer:hover {
+    background:rgba(255,0,0,0.15);
+}
+
+/* COUNTER */
+.counter {
+    text-align:center;
+    margin-top:15px;
+    opacity:0.6;
+}
+
+/* CONTROLS */
+.controls {
+    display:flex;
+    justify-content:space-between;
+    margin-top:25px;
+}
+
+button {
+    padding:12px 20px;
+    border:none;
+    border-radius:12px;
+    background:linear-gradient(45deg,#ff0000,#990000);
+    color:white;
+    cursor:pointer;
+    font-weight:600;
+    transition:0.2s;
+}
+
+button:hover {
+    transform:scale(1.05);
+    box-shadow:0 0 15px red;
+}
+
+/* ANIM */
+@keyframes fadeUp {
+    from {
+        opacity:0;
+        transform:translateY(20px);
+    }
+    to {
+        opacity:1;
+        transform:translateY(0);
+    }
+}
+</style>
+</head>
+
+<body>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">📥 REDLINE • PODANIA</div>
+    <a href="index.html" class="back">⬅ Wróć do strony głównej</a>
+</div>
+
+<div class="container">
+    <div class="card" id="viewer"></div>
+
+    <div class="controls">
+        <button onclick="prev()">⬅ Poprzednia</button>
+        <button onclick="next()">Następna ➡</button>
+    </div>
+</div>
+
+<script>
+let PODANIA = [];
+let index = 0;
+
+async function load() {
+    const res = await fetch("https://redline.umod.pl/api/podania");
+    PODANIA = await res.json();
+
+    show(0);
+}
+
+function extractId(text) {
+    if (!text) return null;
+
+    // wyciąga ID z np: <@123>, 123, nick#1234 (jeśli ID gdzieś jest)
+    const match = text.match(/\d{16,20}/);
+    return match ? match[0] : null;
+}
+
+async function decyzja(type) {
+    const p = PODANIA[index];
+
+    const userId = extractId(p.nick); // może być null
+    const nick = p.nick;
+
+    let powod = null;
+
+    if (type === "nieprzyjete") {
+        powod = prompt("Powód odrzucenia:");
+        if (!powod) return;
+    }
+
+    const user = JSON.parse(localStorage.getItem("user"));
+
+    const res = await fetch("https://redline.umod.pl/api/wynik", {
+        method: "POST",
+        headers: {
+            "Content-Type": "application/json"
+        },
+        body: JSON.stringify({
+            userId,
+            nick,
+            wynik: type,
+            powod,
+            executorId: user.id
+        })
+    });
+
+    const data = await res.json();
+
+    if (!res.ok) {
+        alert("❌ " + data.error);
+        return;
+    }
+
+    alert("✅ Wysłano decyzję!");
+}
+
+function show(i) {
+    const p = PODANIA[i];
+    if (!p) return;
+
+    const viewer = document.getElementById("viewer");
+
+    viewer.innerHTML = `
+        <div class="question">Czy jesteś na serwerze RedLine?</div>
+        <div class="answer">${p.serwer || "Brak odpowiedzi"}</div>
+
+        <div class="section">
+            <div class="question">STREFA OOC</div>
+
+            <div class="question">Nick Discord + discord ID</div>
+            <div class="answer">${p.nick || "Brak odpowiedzi"}</div>
+
+            <div class="question">Ile masz godzin w fivem?</div>
+            <div class="answer">${p.godziny || "Brak odpowiedzi"}</div>
+
+            <div class="question">Czy posiadasz mutacje?</div>
+            <div class="answer">${p.mutacja || "Brak odpowiedzi"}</div>
+
+            <div class="question">Ile masz lat?</div>
+            <div class="answer">${p.wiek || "Brak odpowiedzi"}</div>
+        </div>
+
+        <div class="section">
+            <div class="question">STREFA IC</div>
+
+            <div class="question">Opowiedz coś o sobie</div>
+            <div class="answer">${p.doswiadczenie || "Brak odpowiedzi"}</div>
+
+            <div class="question">Ile masz lat (IC)</div>
+            <div class="answer">${p.wiekIC || "Brak odpowiedzi"}</div>
+        </div>
+
+        <div class="counter">
+            Podanie ${index + 1} / ${PODANIA.length}
+        </div>
+    `;
+viewer.innerHTML += `
+    <div style="margin-top:20px; display:flex; gap:10px;">
+        <button onclick="decyzja('przyjete')" style="flex:1; background:green;">
+            ✅ PRZYJMIJ
+        </button>
+
+        <button onclick="decyzja('nieprzyjete')" style="flex:1; background:#aa0000;">
+            ❌ ODRZUĆ
+        </button>
+    </div>
+`;
+}
+
+function next() {
+    if (index < PODANIA.length - 1) {
+        index++;
+        show(index);
+    }
+}
+
+function prev() {
+    if (index > 0) {
+        index--;
+        show(index);
+    }
+}
+
+load();
+</script>
+
+</body>
+</html>

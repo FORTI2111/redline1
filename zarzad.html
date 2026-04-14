@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+    <meta charset="UTF-8">
+    <title>Panel Zarządu</title>
+
+    <!-- FONT -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;600;700&display=swap" rel="stylesheet">
+
+    <style>
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: 'Poppins', sans-serif;
+}
+
+:root {
+    --main: #ff1a1a;
+    --dark: #0a0a0a;
+    --soft: rgba(255, 0, 0, 0.15);
+}
+
+body {
+    background: radial-gradient(circle at top, #120000, #0a0a0a);
+    color: #f2f2f2;
+    overflow-x: hidden;
+}
+
+/* NAVBAR */
+.navbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 20px 40px;
+    background: rgba(0,0,0,0.7);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(255, 0, 0, 0.15);
+}
+
+.logo {
+    font-size: 22px;
+    font-weight: 700;
+    color: #ff1a1a;
+    text-shadow: 0 0 10px rgba(255,0,0,0.5);
+}
+
+.back-btn {
+    padding: 10px 18px;
+    border-radius: 10px;
+    background: #8b0000;
+    color: white;
+    text-decoration: none;
+    transition: 0.3s;
+    border: 1px solid rgba(255,0,0,0.2);
+}
+
+.back-btn:hover {
+    background: #ff1a1a;
+    box-shadow: 0 0 15px rgba(255,0,0,0.4);
+}
+
+/* HEADER */
+.header {
+    text-align: center;
+    padding: 60px 20px 30px;
+}
+
+.header h1 {
+    font-size: 40px;
+    font-weight: 700;
+}
+
+.header span {
+    color: #ff1a1a;
+    text-shadow: 0 0 10px rgba(255,0,0,0.5);
+}
+
+/* GRID */
+.grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px, 1fr));
+    gap: 25px;
+    padding: 40px;
+}
+
+/* CARD */
+.card {
+    background: rgba(10,0,0,0.6);
+    border: 1px solid rgba(255, 0, 0, 0.2);
+    border-radius: 18px;
+    padding: 25px;
+    backdrop-filter: blur(12px);
+    transition: 0.3s;
+}
+
+.card:hover {
+    transform: translateY(-6px) scale(1.02);
+    box-shadow: 0 0 25px rgba(255, 0, 0, 0.25);
+}
+
+/* SEARCH */
+.search-box {
+    margin: 30px auto 10px;
+    display: flex;
+    justify-content: center;
+    position: relative;
+}
+
+#search {
+    width: 100%;
+    max-width: 520px;
+    padding: 14px 18px 14px 44px;
+    border-radius: 14px;
+    border: 1px solid rgba(255,0,0,0.2);
+    background: rgba(20,0,0,0.6);
+    color: white;
+    font-size: 15px;
+    outline: none;
+    transition: 0.25s;
+}
+
+#search::placeholder {
+    color: rgba(255,255,255,0.3);
+}
+
+#search:focus {
+    border-color: #ff1a1a;
+    box-shadow: 0 0 20px rgba(255,0,0,0.3);
+    transform: scale(1.02);
+}
+
+/* BUTTON */
+.btn {
+    margin-top: 15px;
+    padding: 10px 15px;
+    border: none;
+    border-radius: 10px;
+    background: #8b0000;
+    color: white;
+    cursor: pointer;
+    transition: 0.3s;
+}
+
+.btn:hover {
+    background: #ff1a1a;
+    box-shadow: 0 0 15px rgba(255,0,0,0.4);
+}
+
+/* USERS */
+.pracownicy {
+    margin: 40px;
+}
+
+.user {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 10px;
+    border-radius: 10px;
+    background: rgba(255,0,0,0.03);
+    margin-bottom: 10px;
+    transition: 0.2s;
+    border-left: 3px solid #ff1a1a;
+}
+
+.user:hover {
+    background: rgba(255,0,0,0.08);
+    box-shadow: 0 0 15px rgba(255,0,0,0.2);
+}
+
+.user img {
+    width: 35px;
+    height: 35px;
+    border-radius: 50%;
+}
+
+/* ANIMATION */
+.fade {
+    opacity: 0;
+    transform: translateY(20px);
+    animation: fadeUp 0.8s forwards;
+}
+
+/* 🔴 PULSE LUPA */
+.search-box::before {
+    content: "🔍";
+    position: absolute;
+    left: calc(50% - 240px);
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 0.6;
+    animation: pulseGlow 1.5s infinite;
+    filter: drop-shadow(0 0 8px rgba(255,0,0,0.6));
+}
+
+@keyframes pulseGlow {
+    0% { transform: translateY(-50%) scale(1); opacity: 0.5; }
+    50% { transform: translateY(-50%) scale(1.2); opacity: 1; }
+    100% { transform: translateY(-50%) scale(1); opacity: 0.5; }
+}
+
+/* 🔴 SCAN EFFECT ON FOCUS */
+#search:focus {
+    border-color: #ff1a1a;
+    box-shadow: 0 0 25px rgba(255,0,0,0.5);
+    background: rgba(20,0,0,0.85);
+    animation: scanPulse 1s infinite;
+}
+
+@keyframes scanPulse {
+    0% { box-shadow: 0 0 10px rgba(255,0,0,0.2); }
+    50% { box-shadow: 0 0 25px rgba(255,0,0,0.6); }
+    100% { box-shadow: 0 0 10px rgba(255,0,0,0.2); }
+}
+
+#boot {
+    position: fixed;
+    inset: 0;
+    background: black;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.boot-box {
+    text-align: center;
+    color: #ff1a1a;
+    font-weight: bold;
+}
+
+.bar {
+    width: 220px;
+    height: 4px;
+    background: rgba(255,0,0,0.2);
+    margin-top: 20px;
+    overflow: hidden;
+    position: relative;
+}
+
+.bar::after {
+    content: "";
+    position: absolute;
+    width: 40%;
+    height: 100%;
+    background: #ff1a1a;
+    animation: load 1.2s infinite;
+}
+
+@keyframes load {
+    0% { left: -40%; }
+    100% { left: 100%; }
+}
+
+@keyframes glitch {
+    0% { text-shadow: 2px 0 red, -2px 0 black; }
+    50% { text-shadow: -2px 0 red, 2px 0 black; }
+    100% { text-shadow: 2px 0 red, -2px 0 black; }
+}
+
+.logo {
+    animation: glitch 1.5s infinite;
+}
+
+/* 🔴 HIGHLIGHT SZUKANYCH */
+.highlight {
+    background: rgba(255,0,0,0.25);
+    color: #fff;
+    padding: 0 3px;
+    border-radius: 4px;
+}
+
+body::before {
+    content:"";
+    position:fixed;
+    inset:0;
+    background:
+        radial-gradient(circle at 20% 20%, rgba(255,0,0,0.1), transparent 40%),
+        radial-gradient(circle at 80% 80%, rgba(255,0,0,0.05), transparent 40%);
+    animation: move 10s infinite alternate;
+}
+
+@keyframes move {
+    from { transform: scale(1); }
+    to { transform: scale(1.1); }
+}
+
+.actions {
+    display:flex;
+    gap:6px;
+    margin-top:8px;
+}
+
+.actions button {
+    background: rgba(255,0,0,0.15);
+    border:1px solid rgba(255,0,0,0.3);
+    color:white;
+    padding:5px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    transition:0.2s;
+}
+
+.actions button:hover {
+    background:#ff1a1a;
+    box-shadow:0 0 10px rgba(255,0,0,0.4);
+}
+
+.actions {
+    display:flex;
+    gap:6px;
+    margin-top:8px;
+}
+
+.actions button {
+    background: rgba(255,0,0,0.15);
+    border:1px solid rgba(255,0,0,0.3);
+    color:white;
+    padding:5px 10px;
+    border-radius:6px;
+    cursor:pointer;
+    font-size:12px;
+}
+
+.actions button:hover {
+    background:#ff1a1a;
+}
+
+#podatek.animating {
+    color: #ff1a1a;
+    text-shadow: 0 0 15px rgba(255,0,0,0.7);
+    transform: scale(1.1);
+    transition: 0.2s;
+}
+
+.viewer {
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.85);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 9999;
+}
+
+.viewer-box {
+    background: #120000;
+    border: 1px solid #ff1a1a;
+    padding: 25px;
+    border-radius: 15px;
+    width: 400px;
+    text-align: center;
+    box-shadow: 0 0 30px rgba(255,0,0,0.3);
+}
+
+.viewer-actions {
+    margin-top: 15px;
+    display: flex;
+    justify-content: space-between;
+}
+
+.viewer-actions button {
+    padding: 10px 15px;
+    background: #8b0000;
+    color: white;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.viewer-actions button:hover {
+    background: #ff1a1a;
+}
+
+.podania-card {
+    text-align: center;
+}
+
+.open-btn {
+    margin-top: 15px;
+    padding: 12px 20px;
+    background: linear-gradient(45deg, #ff0000, #990000);
+    border: none;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+    cursor: pointer;
+    transition: 0.2s;
+}
+
+.open-btn:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px red;
+}
+
+.card input {
+    width: 100%;
+    margin-top: 8px;
+    padding: 10px;
+    border-radius: 10px;
+    border: 1px solid rgba(255,0,0,0.2);
+    background: rgba(20,0,0,0.6);
+    color: white;
+    outline: none;
+    transition: 0.2s;
+}
+
+.card input:focus {
+    border-color: #ff1a1a;
+    box-shadow: 0 0 10px rgba(255,0,0,0.4);
+}
+
+.scan-text {
+    text-align: center;
+    color: rgba(255,0,0,0.6);
+    letter-spacing: 3px;
+    font-size: 12px;
+    animation: blink 1s infinite;
+}
+
+@keyframes blink {
+    0% { opacity: 0.2; }
+    50% { opacity: 1; }
+    100% { opacity: 0.2; }
+}
+
+@keyframes fadeUp {
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+    </style>
+</head>
+
+<body>
+
+<div id="boot">
+    <div class="boot-box">
+        <h1>REDLINE SYSTEM</h1>
+        <p>INITIALIZING DATABASE...</p>
+        <div class="bar"></div>
+    </div>
+</div>
+
+<div class="scan-text">
+    SCANNING GUILD DATABASE...
+</div>
+
+<!-- NAVBAR -->
+<div class="navbar">
+    <div class="logo">REDLINE • ZARZĄD</div>
+    <a href="/" class="back-btn">← Wróć</a>
+</div>
+
+<!-- HEADER -->
+<div class="header fade">
+    <h1>Panel <span>Zarządu</span></h1>
+    <p>Zaawansowane zarządzanie serwerem</p>
+</div>
+
+<!-- KARTY -->
+<div class="grid">
+    <div class="card fade">
+        <h2>📊 Statystyki</h2>
+        <p>Zarząd: <span id="zarzad-count">0</span></p>
+        <p>Pracownicy: <span id="pracownicy-count">0</span></p>
+        <button class="btn">Zobacz więcej</button>
+    </div>
+
+    <div class="card fade">
+        <h2>💰 Kalkulator podatku</h2>
+    
+        <label>Stan konta (koniec tygodnia)</label>
+        <input type="number" id="koniec" placeholder="np. 10000">
+    
+        <label>Wypłaty</label>
+        <input type="number" id="wyplaty" placeholder="np. 2000">
+    
+        <div id="calc-steps" style="margin-top:10px; font-size:14px; opacity:0.8;">
+            <div id="step1"></div>
+            <div id="step2"></div>
+           <div id="step3"></div>
+        </div>
+
+        <p style="margin-top:10px;">
+            💰 Podatek: 
+            <span id="podatek" style="color:#ff1a1a; font-weight:700; font-size:18px;">0$</span>
+        </p>
+    </div>
+
+    <div class="card fade">
+        <h2>📜 Logi</h2>
+        <p>Brak błędów</p>
+        <button class="btn">Otwórz</button>
+    </div>
+
+    <div class="card fade">
+        <h2>⚙️ Zarządzanie</h2>
+        <p>Panel użytkowników</p>
+        <button class="btn">Wejdź</button>
+    </div>
+
+    <div class="card podania-card">
+        <h2>📥 Podania</h2>
+        <button class="open-btn" onclick="window.location.href='podania.html'">
+            Otwórz podania
+        </button>
+    </div>
+</div>
+
+
+<!-- PRACOWNICY -->
+ 
+
+<div class="search-box">
+    <input id="search" placeholder="🔍 Szukaj pracownika..." />
+</div>
+<div class="pracownicy fade">
+    <h2>👥 Lista pracowników</h2>
+    
+    <div id="pracownicy-list"></div>
+</div>
+
+<div id="podanie-viewer" style="display:none;" class="viewer">
+    <div class="viewer-box">
+        <h2 id="v-name"></h2>
+        <p id="v-age"></p>
+        <p id="v-reason"></p>
+
+        <div class="viewer-actions">
+            <button onclick="prevPodanie()">⬅</button>
+            <button onclick="nextPodanie()">➡</button>
+            <button onclick="closeViewer()">❌</button>
+        </div>
+    </div>
+</div>
+
+<script src="panel.js"></script>
+
+</body>
+</html>
