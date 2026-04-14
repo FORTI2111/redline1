@@ -11,9 +11,15 @@ if (userParam) {
     localStorage.setItem("user", JSON.stringify(user));
 
     // 🔥 redirect logic
-    if (user.isZarzad) {
-        window.location.href = "/zarzad.html";
-    } 
+if (userParam) {
+    const user = JSON.parse(decodeURIComponent(userParam));
+
+    localStorage.setItem("user", JSON.stringify(user));
+
+    renderRoles(user); // 🔥 WAŻNE
+
+    // NIE rób auto redirect!
+}
     else if (user.isPracownik) {
         window.location.href = "/pracownik.html";
     } 
