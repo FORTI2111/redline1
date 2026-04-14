@@ -22,13 +22,9 @@ if (userParam) {
     }
 }
 
-fetch("https://redline.umod.pl/api/user", {
-    credentials: "include"
-})
-.then(res => res.json())
-.then(user => {
-    if (!user) return;
+const user = JSON.parse(localStorage.getItem("user"));
 
+if (user && user.id) {
     document.querySelector(".login-btn").style.display = "none";
     document.getElementById("user-info").style.display = "flex";
 
@@ -36,7 +32,9 @@ fetch("https://redline.umod.pl/api/user", {
 
     document.getElementById("user-avatar").src =
         `https://cdn.discordapp.com/avatars/${user.id}/${user.avatar}.png`;
-});
+
+    renderRoles(user); // 🔥 TO JEST KLUCZ
+}
 
 setTimeout(() => {
   $(".loading").css("display", "none");
